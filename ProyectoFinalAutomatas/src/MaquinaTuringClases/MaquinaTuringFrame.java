@@ -81,6 +81,8 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
         javax.swing.JButton jButtonCargarConfiguracion = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         JTextFieldEstadoActual = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        jTextFieldSimboloActual = new javax.swing.JTextField();
 
         jLabel2.setText("ESTADO: ");
 
@@ -247,8 +249,8 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
         jTextFieldAlfabateEntrada.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         getContentPane().add(jTextFieldAlfabateEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 160, 530, -1));
 
-        jLabel10.setText("Transiciones (Separadas por parentesis y comas (q0,0->q0,0,R),(q0,1->q0,1,R))");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 190, -1, -1));
+        jLabel10.setText("Transiciones (EstadoActual,SimboloActual→EstadoSiguiente,SimboloNuevo,Dirección (R o L))");
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 190, -1, -1));
 
         jTextAreaTransiciones.setColumns(20);
         jTextAreaTransiciones.setRows(5);
@@ -275,7 +277,7 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
         getContentPane().add(jButtonCargarConfiguracion, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 460, -1, -1));
 
         jLabel11.setText("Estado Actual");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 370, -1, -1));
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 320, -1, -1));
 
         JTextFieldEstadoActual.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         JTextFieldEstadoActual.setToolTipText("");
@@ -284,7 +286,14 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
                 JTextFieldEstadoActualActionPerformed(evt);
             }
         });
-        getContentPane().add(JTextFieldEstadoActual, new org.netbeans.lib.awtextra.AbsoluteConstraints(74, 390, 70, -1));
+        getContentPane().add(JTextFieldEstadoActual, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 340, 70, -1));
+
+        jLabel5.setText("Simbolo Actual");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 380, -1, -1));
+
+        jTextFieldSimboloActual.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextFieldSimboloActual.setToolTipText("");
+        getContentPane().add(jTextFieldSimboloActual, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 400, 70, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -441,20 +450,22 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
      * Carga la cadena en la cinta y posiciona el cabezal al inicio de la
      * cadena. Además, inicializa el estado actual al estado inicial.
      */
+    // Método para cargar la cadena en la cinta y posicionar el cabezal
     private void cargarCadena() {
-        cargarConfiguraciones();// Recarga todas las configuraciones al cargar la cadena
+        cargarConfiguraciones(); // Recarga todas las configuraciones al cargar la cadena
         JTextFieldEstadoActual.setText(estadoInicial); // Reinicia el estado actual a su valor inicial
         cadena = JTextFieldCadenaSimular.getText(); // Inicializa la cinta y la señalización
-        cinta = new String[22];
+        cinta = new String[100];
         for (int i = 0; i < cinta.length; i++) {
             cinta[i] = "#"; // Se rellena con espacios en blanco
         }
 
-         for (int i = 0; i < cadena.length(); i++) { // Coloca la cadena en el centro de la cinta (asumiendo que empieza en el índice 5)
-            cinta[i + 5] = String.valueOf(cadena.charAt(i));
+        for (int i = 0; i < cadena.length(); i++) { // Coloca la cadena en el centro de la cinta (asumiendo que empieza en el índice 2)
+            cinta[i + 2] = String.valueOf(cadena.charAt(i));
         }
 
-        actualizarCintaVisual();// Reinicia el visualizador de la cinta
+        actualizarCintaVisual(); // Reinicia el visualizador de la cinta
+        jTextFieldSimboloActual.setText(cinta[2]); // Mostrar el primer símbolo en el JTextField SimboloActual
 
         try { // Asigna el estado inicial desde la configuración
             estado = Integer.parseInt(estadoInicial.substring(1));
@@ -462,8 +473,8 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error: Formato de estado inicial no válido");
             return; // Salir si hay un error de formato
         }
-        
-        señalizador = 5; // Reinicia el señalizador para apuntar a la primera posición de la cadena
+
+        señalizador = 2; // Reinicia el señalizador para apuntar a la primera posición de la cadena
         mostrarCabezal(); // Actualiza la posición del cabezal
     }
 
@@ -494,6 +505,13 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
                 señalizador++;
             } else if (transicion[2].equals("L")) {
                 señalizador--;
+            }
+
+            // Actualiza el símbolo actual en la interfaz (JTextFieldSimboloActual)
+            if (señalizador >= 0 && señalizador < cinta.length) {
+                jTextFieldSimboloActual.setText(cinta[señalizador]);
+            } else {
+                jTextFieldSimboloActual.setText("#"); // Si el cabezal está fuera de la cinta, muestra un símbolo en blanco
             }
 
             actualizarCintaVisual(); // Refleja los cambios en la cinta visualmente
@@ -576,6 +594,7 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -608,5 +627,6 @@ public class MaquinaTuringFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldEstadoInicial;
     private javax.swing.JTextField jTextFieldEstadosFinales;
     private javax.swing.JTextField jTextFieldEstadosMaquina;
+    private javax.swing.JTextField jTextFieldSimboloActual;
     // End of variables declaration//GEN-END:variables
 }
